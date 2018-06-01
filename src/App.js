@@ -3,51 +3,74 @@ import ReactDOM from 'react-dom';
 import logo from './logo.svg';
 import './App.css';
 
-class App extends Component {
+const HOC = (InnerComponent) => class extends React.Component {
+
     constructor()
     {
         super();
         this.state = {
-            items: []
+            count: 0
         };
-        // this.update = this.update.bind(this);
     }
 
     componentWillMount()
     {
-        fetch('https://cors.io/?http://swapi.co/api/people/?format=json')
-            .then(response => response.json())
-            .then(({results: items}) => this.setState({items}))
+        console.log("will mount")
     }
 
-    filter(e)
+    update()
     {
         this.setState({
-            filter: e.target.value
-        });
+            count: this.state.count + 1
+        })
     }
 
     render()
     {
-        let items = this.state.items;
-        if (this.state.filter)
-        {
-            items = items.filter(item =>
-                item.name.toLowerCase().includes(this.state.filter.toLowerCase()))
-        }
+        return (
+            <InnerComponent
+                {...this.props}
+                {...this.state}
+                update={this.update.bind(this)}
+            />
+        )
+    }
+}
+
+class App extends Component {
+
+
+    render()
+    {
         return (
             <div>
-                <input type="text" onChange={this.filter.bind(this)}/>
-                {items.map(item =>
-                    <Person key={item.name} person={item}>{item.name}</Person>)}
+                <Button>
+                    button
+                </Button>
+                <hr/>
+                <LabelHOC>
+                    label
+                </LabelHOC>
             </div>
         )
     }
 
+}
+
+const Button = HOC((props) =>
+    <button onClick={props.update}>
+        {props.children} - {props.count}</button>)
+
+class Label extends React.Component {
+    render()
+    {
+        return (
+            <label onMouseMove={this.props.update}>{this.props.children} -{this.props.count}</label>
+        )
+    }
 
 }
 
-const Person = (props) => <h4> {props.person.name}</h4>
-
+const LabelHOC = HOC((Label));
 
 export default App;
