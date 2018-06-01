@@ -3,74 +3,32 @@ import ReactDOM from 'react-dom';
 import logo from './logo.svg';
 import './App.css';
 
-const HOC = (InnerComponent) => class extends React.Component {
-
-    constructor()
-    {
-        super();
-        this.state = {
-            count: 0
-        };
-    }
-
-    componentWillMount()
-    {
-        console.log("will mount")
-    }
-
-    update()
-    {
-        this.setState({
-            count: this.state.count + 1
-        })
-    }
-
-    render()
-    {
-        return (
-            <InnerComponent
-                {...this.props}
-                {...this.state}
-                update={this.update.bind(this)}
-            />
-        )
-    }
-}
-
 class App extends Component {
-
-
     render()
     {
         return (
-            <div>
-                <Button>
-                    button
-                </Button>
-                <hr/>
-                <LabelHOC>
-                    label
-                </LabelHOC>
-            </div>
+            <Parent>
+                <div className="childA"></div>
+                {/*<div className="childB"></div>*/}
+            </Parent>
         )
     }
-
 }
 
-const Button = HOC((props) =>
-    <button onClick={props.update}>
-        {props.children} - {props.count}</button>)
-
-class Label extends React.Component {
+class Parent extends React.Component {
     render()
     {
-        return (
-            <label onMouseMove={this.props.update}>{this.props.children} -{this.props.count}</label>
-        )
+        // let items = React.Children
+        //     .forEach(this.props.children,child => child);
+        // console.log(this.props.children)
+
+        // let items = this.props.children.map(child => child)
+        // let items = React.Children.map(this.props.children, child => child)
+        let items = React.Children
+            .forEach(this.props)
+        console.log(items)
+        return null
     }
-
 }
-
-const LabelHOC = HOC((Label));
 
 export default App;
