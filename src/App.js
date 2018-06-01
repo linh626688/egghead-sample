@@ -4,41 +4,50 @@ import logo from './logo.svg';
 import './App.css';
 
 class App extends Component {
-    constructor(){
+    constructor()
+    {
         super();
-        this.state = { increasing: false};
-        this.update = this.update.bind(this);
+        this.state = {
+            items: []
+        };
+        // this.update = this.update.bind(this);
     }
-    componentWillReceiveProps(nextProps){
-        this.setState({ increasing: nextProps.val > this.props.val})
+
+    componentWillMount()
+    {
+        fetch('https://cors.io/?http://swapi.co/api/people/?format=json')
+            .then(response => response.json())
+            .then(({results: items}) => this.setState({items}))
     }
-    shouldComponentUpdate(nextProps, nextState) {
-        return nextProps.val % 5 === 0;
-    }
-    update() {
-        // this.setState({
-        //     val: this.state.val + 1
-        // })
-        ReactDOM.render(
-            <App val = {this.props.val + 1} />,
-            document.getElementById('root')
-        )
+
+    filter(e)
+    {
+        this.setState({
+            filter: e.target.value
+        });
     }
 
     render()
     {
-        console.log(this.state.increasing)
+        let items = this.state.items;
+        if (this.state.filter)
+        {
+            items = items.filter(item =>
+                item.name.toLowerCase().includes(this.state.filter.toLowerCase()))
+        }
         return (
-            <button onClick={this.update.bind(this)}>{this.props.val}</button>
+            <div>
+                <input type="text" onChange={this.filter.bind(this)}/>
+                {items.map(item =>
+                    <Person key={item.name} person={item}>{item.name}</Person>)}
+            </div>
         )
     }
-    componenetDidUpdate(prevProps, prevState){
-        console.log(`prevProps: ${prevProps.val}`)
-    }
+
 
 }
 
-App.defaultProps = {val : 0}
+const Person = (props) => <h4> {props.person.name}</h4>
 
 
 export default App;
